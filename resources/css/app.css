@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    body {
+        background-color: #faf9f6;
+        color: #1c1917;
+    }
+}
+
+.font-editorial {
+    font-family: 'Newsreader', Georgia, serif;
+    font-style: italic;
+}
+
+/* Custom editorial refined scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #f5f3ef;
+}
+::-webkit-scrollbar-thumb {
+    background: #d6d3cd;
+    border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a29e;
+}
