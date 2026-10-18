@@ -7,6 +7,7 @@ use App\Http\Controllers\ApiController;
 Route::prefix('api')->group(function () {
     Route::get('/init', [ApiController::class, 'getInitialData']);
     Route::post('/login', [ApiController::class, 'login']);
+    Route::post('/logout', [ApiController::class, 'logout']);
     Route::post('/register', [ApiController::class, 'register']);
     Route::post('/switch-user', [ApiController::class, 'switchUser']);
     Route::get('/kategori', [ApiController::class, 'getCategories']);

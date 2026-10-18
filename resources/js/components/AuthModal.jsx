@@ -8,6 +8,7 @@ import {
     MapPin, 
     UserPlus, 
     LogIn, 
+    LogOut,
     Database, 
     AlertCircle, 
     CheckCircle2,
@@ -21,11 +22,13 @@ export default function AuthModal({
     currentUser,
     onLogin,
     onRegister,
-    onSwitchUser
+    onSwitchUser,
+    onLogout,
+    initialMode = 'profile'
 }) {
     if (!isOpen) return null;
 
-    const [mode, setMode] = useState('profile'); // 'profile', 'login', 'register'
+    const [mode, setMode] = useState(currentUser ? initialMode : 'login'); // 'profile', 'login', 'register'
     const [identifier, setIdentifier] = useState('');
     const [loginPassword, setLoginPassword] = useState('');
     
@@ -262,6 +265,23 @@ export default function AuthModal({
                                     </button>
                                 </div>
                             </div>
+
+                            {/* Logout Action */}
+                            {onLogout && (
+                                <div className="pt-2 border-t border-slate-100">
+                                    <button
+                                        type="button"
+                                        onClick={async () => {
+                                            await onLogout();
+                                            onClose();
+                                        }}
+                                        className="w-full py-2.5 px-4 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold text-xs flex items-center justify-center gap-2 transition-colors"
+                                    >
+                                        <LogOut className="w-3.5 h-3.5" />
+                                        <span>Keluar dari Akun (Logout)</span>
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     )}
 

@@ -19,8 +19,8 @@ class ApiController extends Controller
      */
     public function getInitialData(Request $request)
     {
-        $userId = session('logged_user_id', 1);
-        $user = User::find($userId) ?? User::first();
+        $userId = session('logged_user_id');
+        $user = $userId ? User::find($userId) : null;
 
         $categories = Kategori::withCount('produk')->get();
         $products = Produk::with('kategori')->where('is_active', true)->get();
@@ -72,6 +72,19 @@ class ApiController extends Controller
             'success' => true,
             'message' => 'Login berhasil! Selamat datang, ' . $user->nama_lengkap,
             'user' => $user,
+        ]);
+    }
+
+    /**
+     * User Logout
+     */
+    public function logout(Request $request)
+    {
+        session()->forget('logged_user_id');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Berhasil keluar dari akun.',
         ]);
     }
 
@@ -273,7 +286,14 @@ class ApiController extends Controller
      */
     public function getTransactions(Request $request)
     {
-        $userId = $request->query('user_id', session('logged_user_id', 1));
+        $userId = $request->query('user_id', session('logged_user_id'));
+
+        if (!$userId) {
+            return response()->json([
+                'success' => true,
+                'transactions' => [],
+            ]);
+        }
 
         $transactions = Transaksi::with('detailTransaksi')
             ->where('user_id', $userId)
