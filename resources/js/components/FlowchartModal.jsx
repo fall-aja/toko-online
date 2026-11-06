@@ -10,17 +10,13 @@ import {
     ShoppingCart,
     CreditCard,
     CheckCircle,
-    Server,
-    ExternalLink,
-    FileText,
-    Image as ImageIcon
+    Server
 } from 'lucide-react';
 
 export default function FlowchartModal({ isOpen, onClose }) {
     if (!isOpen) return null;
 
-    const [activeTab, setActiveTab] = useState('flowchart'); // 'flowchart' | 'erd' | 'diagram_view'
-    const [diagramType, setDiagramType] = useState('erd'); // 'erd' | 'flowchart'
+    const [activeTab, setActiveTab] = useState('flowchart'); // 'flowchart' | 'erd'
 
     // 5 Tahap Flowchart Sesuai Flowchart Toko-Online
     const flowchartSteps = [
@@ -247,7 +243,7 @@ export default function FlowchartModal({ isOpen, onClose }) {
                 </div>
 
                 {/* Tab Switcher */}
-                <div className="grid grid-cols-3 border-b border-stone-200/80 text-xs font-semibold bg-stone-50/60 shrink-0">
+                <div className="grid grid-cols-2 border-b border-stone-200/80 text-xs font-semibold bg-stone-50/60 shrink-0">
                     <button
                         onClick={() => setActiveTab('flowchart')}
                         className={`py-3 text-center border-b-2 transition-all ${
@@ -267,16 +263,6 @@ export default function FlowchartModal({ isOpen, onClose }) {
                         }`}
                     >
                         Skema Basis Data (7 Tabel ERD)
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('diagram_view')}
-                        className={`py-3 text-center border-b-2 transition-all ${
-                            activeTab === 'diagram_view'
-                                ? 'border-stone-950 text-stone-950 bg-white font-bold'
-                                : 'border-transparent text-stone-500 hover:text-stone-800'
-                        }`}
-                    >
-                        Lihat Gambar Diagram Asli
                     </button>
                 </div>
 
@@ -403,53 +389,7 @@ export default function FlowchartModal({ isOpen, onClose }) {
                         </div>
                     )}
 
-                    {/* TAB 3: DIAGRAM VIEW */}
-                    {activeTab === 'diagram_view' && (
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between pb-2 border-b border-stone-200">
-                                <div className="flex items-center gap-2">
-                                    <button
-                                        onClick={() => setDiagramType('erd')}
-                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                                            diagramType === 'erd'
-                                                ? 'bg-stone-900 text-white'
-                                                : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
-                                        }`}
-                                    >
-                                        Lihat Diagram ERD (7 Tabel)
-                                    </button>
-                                    <button
-                                        onClick={() => setDiagramType('flowchart')}
-                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                                            diagramType === 'flowchart'
-                                                ? 'bg-stone-900 text-white'
-                                                : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
-                                        }`}
-                                    >
-                                        Lihat Diagram Flowchart (5 Tahap)
-                                    </button>
-                                </div>
 
-                                <a
-                                    href={diagramType === 'erd' ? '/images/diagrams/erd-toko-online.png' : '/images/diagrams/flowchart-toko-online.png'}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="inline-flex items-center gap-1 text-[11px] font-bold text-stone-700 hover:text-stone-900 underline"
-                                >
-                                    <span>Buka Gambar Asli Resolusi Penuh</span>
-                                    <ExternalLink className="w-3 h-3" />
-                                </a>
-                            </div>
-
-                            <div className="bg-stone-950 rounded-2xl p-3 flex justify-center items-center overflow-auto max-h-[60vh] border border-stone-800">
-                                <img
-                                    src={diagramType === 'erd' ? '/images/diagrams/erd-toko-online.png' : '/images/diagrams/flowchart-toko-online.png'}
-                                    alt={diagramType === 'erd' ? 'ERD Toko-Online' : 'Flowchart Toko-Online'}
-                                    className="max-w-full h-auto rounded-lg shadow-lg"
-                                />
-                            </div>
-                        </div>
-                    )}
                 </div>
 
                 {/* Modal Footer */}
