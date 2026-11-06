@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Produk;
-use App\Models\Kategori;
+use App\Models\Product;
+use App\Models\Category;
 
 class ProdukSeeder extends Seeder
 {
@@ -18,28 +18,28 @@ class ProdukSeeder extends Seeder
         $products = require database_path('data/produk.php');
 
         // Buat map kategori untuk pencarian cepat
-        $kategoriMap = Kategori::pluck('id_kategori', 'nama_kategori')->toArray();
+        $kategoriMap = Category::pluck('category_id', 'nama_kategori')->toArray();
 
         foreach ($products as $item) {
             $kategoriId = $kategoriMap[$item['kategori']] ?? null;
 
             if (!$kategoriId) {
                 // Buat kategori jika belum ada
-                $kat = Kategori::firstOrCreate(
+                $kat = Category::firstOrCreate(
                     ['nama_kategori' => $item['kategori']],
                     ['deskripsi'     => 'Kategori ' . $item['kategori']]
                 );
-                $kategoriId = $kat->id_kategori;
+                $kategoriId = $kat->category_id;
                 $kategoriMap[$item['kategori']] = $kategoriId;
             }
 
-            Produk::updateOrCreate(
+            Product::updateOrCreate(
                 ['nama_produk' => $item['nama_produk']],
                 [
-                    'kategori_id' => $kategoriId,
+                    'category_id' => $kategoriId,
                     'harga'       => $item['harga'],
                     'stok'        => $item['stok'] ?? 0,
-                    'berat'       => $item['berat'] ?? null,
+                    'berat_gram'  => $item['berat'] ?? 0,
                     'deskripsi'   => $item['deskripsi'] ?? null,
                     'ukuran'      => $item['ukuran'] ?? null,
                     'warna'       => $item['warna'] ?? null,
@@ -50,6 +50,6 @@ class ProdukSeeder extends Seeder
 
         // Hapus produk lama yang sudah tidak terdaftar di database/data/produk.php
         $activeNames = array_column($products, 'nama_produk');
-        Produk::whereNotIn('nama_produk', $activeNames)->delete();
+        Product::whereNotIn('nama_produk', $activeNames)->delete();
     }
 }

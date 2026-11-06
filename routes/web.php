@@ -12,8 +12,11 @@ Route::prefix('api')->group(function () {
     Route::post('/switch-user', [ApiController::class, 'switchUser']);
     Route::get('/kategori', [ApiController::class, 'getCategories']);
     Route::get('/produk', [ApiController::class, 'getProducts']);
+    Route::get('/cart', [ApiController::class, 'getCart']);
+    Route::post('/cart/sync', [ApiController::class, 'syncCart']);
     Route::post('/checkout', [ApiController::class, 'checkout']);
     Route::get('/transaksi', [ApiController::class, 'getTransactions']);
+    Route::patch('/orders/{orderId}/status', [ApiController::class, 'updateOrderStatus']);
     Route::post('/profile', [ApiController::class, 'updateProfile']);
 });
 

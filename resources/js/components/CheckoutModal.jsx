@@ -41,12 +41,14 @@ export default function CheckoutModal({
         setErrorMessage(null);
 
         const payload = {
-            user_id: currentUser?.id_user || 1,
+            user_id: currentUser?.user_id || currentUser?.id_user || 1,
             items: cartItems.map(item => ({
-                produk_id: item.id_produk,
-                qty: item.qty,
-                size: item.selectedSize || null,
-                color: item.selectedColor || null,
+                product_id: item.product_id || item.id_produk,
+                produk_id: item.product_id || item.id_produk,
+                qty: item.qty || item.jumlah || 1,
+                jumlah: item.qty || item.jumlah || 1,
+                size: item.selectedSize || item.ukuran || null,
+                color: item.selectedColor || item.warna || null,
             })),
             metode_pembayaran: paymentMethod,
             simulate_payment: simulateMode,

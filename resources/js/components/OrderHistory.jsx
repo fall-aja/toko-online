@@ -35,7 +35,7 @@ export default function OrderHistory({ transactions, onStartShopping, currentUse
                     <div>
                         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 mb-2">
                             <Database className="w-3.5 h-3.5" />
-                            Relasi: Tabel Transaksi & Detail Transaksi
+                            Relasi: Tabel orders, order_items &amp; payments
                         </div>
                         <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
                             Riwayat Pesanan & Transaksi Saya
@@ -172,10 +172,10 @@ export default function OrderHistory({ transactions, onStartShopping, currentUse
                                         <div className="flex items-center justify-between mb-2">
                                             <span className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
                                                 <Database className="w-3.5 h-3.5 text-emerald-600" />
-                                                Detail Item Pesanan (Tabel: detail_transaksi)
+                                                Detail Item Pesanan (Tabel: order_items)
                                             </span>
                                             <span className="text-[11px] text-slate-400 font-mono">
-                                                transaksi_id: {trx.id_transaksi}
+                                                order_id: #{trx.order_id || trx.id_transaksi}
                                             </span>
                                         </div>
 
