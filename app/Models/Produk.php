@@ -22,6 +22,8 @@ class Produk extends Model
         'stok',
         'berat',
         'deskripsi',
+        'ukuran',
+        'warna',
         'is_active',
     ];
 
@@ -31,6 +33,8 @@ class Produk extends Model
             'harga' => 'float',
             'stok' => 'integer',
             'berat' => 'integer',
+            'ukuran' => 'array',
+            'warna' => 'array',
             'is_active' => 'boolean',
             'created_at' => 'datetime',
         ];

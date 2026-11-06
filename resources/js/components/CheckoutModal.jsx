@@ -45,6 +45,8 @@ export default function CheckoutModal({
             items: cartItems.map(item => ({
                 produk_id: item.id_produk,
                 qty: item.qty,
+                size: item.selectedSize || null,
+                color: item.selectedColor || null,
             })),
             metode_pembayaran: paymentMethod,
             simulate_payment: simulateMode,
@@ -62,22 +64,22 @@ export default function CheckoutModal({
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50/70">
                     <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-xs">
+                        <div className="w-10 h-10 rounded-2xl bg-stone-900 text-stone-50 flex items-center justify-center shadow-2xs">
                             <CreditCard className="w-5 h-5" />
                         </div>
                         <div>
-                            <h3 className="text-base font-bold text-slate-900">
-                                Checkout & Pembayaran Pesanan
+                            <h3 className="text-base font-bold text-stone-900">
+                                Checkout &amp; Pembayaran Pesanan
                             </h3>
-                            <p className="text-xs text-slate-500">
-                                Sesuai Alur Flowchart & Simpan ke DB Transaksi
+                            <p className="text-xs text-stone-500">
+                                Informasi Pengiriman &amp; Metode Pembayaran Aman
                             </p>
                         </div>
                     </div>
                     <button
                         onClick={onClose}
                         disabled={isSubmitting}
-                        className="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-colors"
+                        className="w-8 h-8 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-100 flex items-center justify-center transition-colors"
                     >
                         <X className="w-5 h-5" />
                     </button>
@@ -90,21 +92,21 @@ export default function CheckoutModal({
                         <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-3">
                             <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
                             <div>
-                                <span className="font-bold block text-sm mb-0.5">Percabangan Flowchart: Pembayaran Gagal!</span>
+                                <span className="font-bold block text-sm mb-0.5">Pembayaran Belum Berhasil</span>
                                 <p>{errorMessage}</p>
                                 <span className="text-[11px] text-rose-600 block mt-1">
-                                    Alur diagram: Anda tetap berada di halaman Checkout untuk mengulang atau mengubah metode pembayaran.
+                                    Silakan periksa saldo, koneksi, atau coba pilih metode pembayaran lain di bawah.
                                 </span>
                             </div>
                         </div>
                     )}
 
                     {/* Shipping Address (from ERD user table) */}
-                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                    <div className="bg-stone-50 border border-stone-200 rounded-xl p-4">
                         <div className="flex items-center justify-between mb-2">
-                            <span className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                                <MapPin className="w-3.5 h-3.5 text-emerald-600" />
-                                Alamat Pengiriman (Data Tabel User)
+                            <span className="text-xs font-bold uppercase tracking-wider text-stone-500 flex items-center gap-1.5">
+                                <MapPin className="w-3.5 h-3.5 text-stone-700" />
+                                Alamat Pengiriman Utama
                             </span>
                             <span className="text-[11px] text-slate-400">
                                 ID Pengguna: #{currentUser?.id_user || 1}
@@ -131,13 +133,29 @@ export default function CheckoutModal({
                         </span>
                         <div className="bg-slate-50 rounded-xl border border-slate-200 p-3 divide-y divide-slate-100 max-h-44 overflow-y-auto">
                             {cartItems.map((item) => (
-                                <div key={item.id_produk} className="py-2 first:pt-0 last:pb-0 flex items-center justify-between text-xs">
+                                <div key={item.cartKey || item.id_produk} className="py-2 first:pt-0 last:pb-0 flex items-center justify-between text-xs">
                                     <div className="min-w-0 pr-2">
                                         <div className="font-semibold text-slate-800 truncate">
                                             {item.nama_produk}
                                         </div>
-                                        <div className="text-[11px] text-slate-400">
-                                            {item.qty} x {formatRupiah(item.harga)}
+                                        <div className="text-[11px] text-slate-400 flex items-center gap-1.5 flex-wrap mt-0.5">
+                                            <span>{item.qty} x {formatRupiah(item.harga)}</span>
+                                            {item.selectedSize && (
+                                                <span className="font-bold text-stone-700 bg-stone-200/80 px-1.5 py-0.2 rounded text-[10px]">
+                                                    Size: {item.selectedSize}
+                                                </span>
+                                            )}
+                                            {item.selectedColor && (
+                                                <span className="text-stone-600 bg-stone-100 px-1.5 py-0.2 rounded text-[10px] flex items-center gap-1 border border-stone-200">
+                                                    {item.selectedColorHex && (
+                                                        <span 
+                                                            className="w-1.5 h-1.5 rounded-full inline-block"
+                                                            style={{ backgroundColor: item.selectedColorHex }}
+                                                        />
+                                                    )}
+                                                    {item.selectedColor}
+                                                </span>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="font-bold text-slate-900 shrink-0">
@@ -225,14 +243,14 @@ export default function CheckoutModal({
                         </div>
                     </div>
 
-                    {/* Flowchart Simulation Switch (Allows testing Success vs Fail per flowchart) */}
-                    <div className="bg-slate-100 rounded-xl p-3 border border-slate-200">
+                    {/* Payment Simulation Switch */}
+                    <div className="bg-stone-50 rounded-xl p-3 border border-stone-200">
                         <div className="flex items-center justify-between mb-1.5">
-                            <span className="text-[11px] font-bold text-slate-700">
-                                Pengujian Flowchart: Simulasi Hasil Pembayaran
+                            <span className="text-[11px] font-bold text-stone-700">
+                                Mode Uji Coba Transaksi (Payment Sandbox)
                             </span>
-                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-white text-slate-600 border border-slate-200">
-                                Fitur Demo Flowchart
+                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-white text-stone-600 border border-stone-200">
+                                Pengujian Sistem
                             </span>
                         </div>
                         <div className="grid grid-cols-2 gap-2 text-xs">

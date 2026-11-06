@@ -14,6 +14,7 @@ Route::prefix('api')->group(function () {
     Route::get('/produk', [ApiController::class, 'getProducts']);
     Route::post('/checkout', [ApiController::class, 'checkout']);
     Route::get('/transaksi', [ApiController::class, 'getTransactions']);
+    Route::post('/profile', [ApiController::class, 'updateProfile']);
 });
 
 // Main SPA entry point

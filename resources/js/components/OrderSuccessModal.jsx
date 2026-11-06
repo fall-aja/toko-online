@@ -27,13 +27,13 @@ export default function OrderSuccessModal({ transaction, isOpen, onClose, onView
                         <CheckCircle2 className="w-9 h-9" />
                     </div>
                     <span className="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 mb-2">
-                        Flowchart: Transaksi Selesai & Sukses!
+                        Pesanan Berhasil &amp; Terkonfirmasi
                     </span>
-                    <h3 className="text-xl font-extrabold text-slate-900">
+                    <h3 className="text-xl font-extrabold text-stone-900">
                         Pembayaran Berhasil Dikonfirmasi
                     </h3>
-                    <p className="text-xs text-slate-500 mt-1">
-                        Data pesanan telah resmi tersimpan di tabel <code className="bg-white px-1 py-0.5 rounded text-emerald-700 font-semibold">transaksi</code> dan <code className="bg-white px-1 py-0.5 rounded text-emerald-700 font-semibold">detail_transaksi</code>.
+                    <p className="text-xs text-stone-500 mt-1">
+                        Terima kasih! Pesanan kurasi RupaKala Anda telah tercatat dan sedang disiapkan oleh studio artisan.
                     </p>
                 </div>
 

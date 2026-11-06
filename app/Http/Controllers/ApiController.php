@@ -228,31 +228,42 @@ class ApiController extends Controller
                 $total += $subtotal;
 
                 $orderItems[] = [
-                    'produk' => $produk,
-                    'qty' => $item['qty'],
-                    'harga' => $produk->harga,
+                    'produk'   => $produk,
+                    'qty'      => $item['qty'],
+                    'harga'    => $produk->harga,
                     'subtotal' => $subtotal,
+                    'size'     => $item['size'] ?? null,
+                    'color'    => $item['color'] ?? null,
                 ];
             }
 
             // Create Transaksi
             $transaksi = Transaksi::create([
-                'user_id' => $request->user_id,
-                'tanggal' => Carbon::now(),
-                'total' => $total,
-                'status' => $request->metode_pembayaran === 'cod' ? 'pending' : 'paid',
+                'user_id'           => $request->user_id,
+                'tanggal'           => Carbon::now(),
+                'total'             => $total,
+                'status'            => $request->metode_pembayaran === 'cod' ? 'pending' : 'paid',
                 'metode_pembayaran' => $request->metode_pembayaran,
             ]);
 
             // Create DetailTransaksi & Deduct Stock
             foreach ($orderItems as $itemData) {
+                $detailNama = $itemData['produk']->nama_produk;
+                $variants = array_filter([
+                    !empty($itemData['size']) ? 'Ukuran: ' . $itemData['size'] : null,
+                    !empty($itemData['color']) ? 'Warna: ' . $itemData['color'] : null,
+                ]);
+                if (!empty($variants)) {
+                    $detailNama .= ' (' . implode(', ', $variants) . ')';
+                }
+
                 DetailTransaksi::create([
                     'transaksi_id' => $transaksi->id_transaksi,
-                    'produk_id' => $itemData['produk']->id_produk,
-                    'nama_produk' => $itemData['produk']->nama_produk,
-                    'qty' => $itemData['qty'],
-                    'harga' => $itemData['harga'],
-                    'subtotal' => $itemData['subtotal'],
+                    'produk_id'    => $itemData['produk']->id_produk,
+                    'nama_produk'  => substr($detailNama, 0, 100),
+                    'qty'          => $itemData['qty'],
+                    'harga'        => $itemData['harga'],
+                    'subtotal'     => $itemData['subtotal'],
                 ]);
 
                 // Reduce stock
@@ -303,6 +314,53 @@ class ApiController extends Controller
         return response()->json([
             'success' => true,
             'transactions' => $transactions,
+        ]);
+    }
+
+    /**
+     * Update User Profile (foto, nama, username, no_hp, alamat, email)
+     */
+    public function updateProfile(Request $request)
+    {
+        $userId = $request->input('user_id', session('logged_user_id'));
+        $user = User::find($userId);
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pengguna tidak ditemukan. Silakan login kembali.',
+            ], 404);
+        }
+
+        $request->validate([
+            'nama_lengkap' => 'required|string|max:100',
+            'username' => 'required|string|max:50|unique:user,username,' . $user->id_user . ',id_user',
+            'email' => 'required|email|max:100|unique:user,email,' . $user->id_user . ',id_user',
+            'no_hp' => 'nullable|string|max:20',
+            'alamat' => 'nullable|string',
+            'foto' => 'nullable|string',
+        ]);
+
+        $user->nama_lengkap = $request->nama_lengkap;
+        $user->username = $request->username;
+        $user->email = $request->email;
+        $user->no_hp = $request->no_hp;
+        $user->alamat = $request->alamat;
+        if ($request->has('foto')) {
+            $user->foto = $request->foto;
+        }
+
+        if ($request->filled('password')) {
+            $request->validate(['password' => 'min:6']);
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Profil Anda berhasil diperbarui!',
+            'user' => $user->fresh(),
         ]);
     }
 }

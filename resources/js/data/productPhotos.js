@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * DAFTAR FOTO PRODUK (RESOLUSI TINGGI UNSPLASH)
+ * DAFTAR FOTO PRODUK
  * ============================================================================
  * File ini memetakan nama produk ke URL foto katalog.
  * Jika Anda menambah produk baru di database/data/produk.php,
@@ -16,10 +16,12 @@ export const PRODUCT_PHOTOS = {
         'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&auto=format&fit=crop&q=80',
     'Mechanical Keyboard 75% Wireless': 
         'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&auto=format&fit=crop&q=80',
+    'Powerbank Magnetic Wireless 10000mAh 22.5W': 
+        '/images/powerbank/powerbank1.png',
     'Powerbank Fast Charge 20000mAh 65W': 
-        'https://images.unsplash.com/photo-1609592806596-b33367838fb3?w=600&auto=format&fit=crop&q=80',
+        '/images/powerbank/powerbank1.png',
 
-    // Kategori: Fashion & Pakaian
+    // Kategori: Fashion & Pakaian (Polo & Kaos)
     'Polo Shirt Retro Hitam Kerah Putih': 
         '/images/baju/baju1.png',
     'Polo Shirt Pastel Biru Kerah Putih': 
@@ -32,22 +34,14 @@ export const PRODUCT_PHOTOS = {
         '/images/baju/baju1.png',
     'Heavyweight Hoodie Oversize 330gsm': 
         'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=600&auto=format&fit=crop&q=80',
-    'Celana Chino Slim Fit Stretch': 
-        'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600&auto=format&fit=crop&q=80',
 
-    // Kategori: Sepatu & Tas
-    'Sneakers Urban Casual White Leather': 
-        'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&auto=format&fit=crop&q=80',
-    'Backpack Anti-Air Laptop 15.6 Inch': 
-        'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&auto=format&fit=crop&q=80',
-    'Sling Bag Minimalist Cordura': 
-        'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&auto=format&fit=crop&q=80',
-
-    // Kategori: Perlengkapan Rumah
-    'Tumbler Vacuum Insulated 750ml': 
-        'https://images.unsplash.com/photo-1517256064527-09c73fc73e38?w=600&auto=format&fit=crop&q=80',
-    'Lampu Meja LED Dimmable Touch Control': 
-        'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=600&auto=format&fit=crop&q=80',
+    // Kategori: Fashion & Pakaian (Jaket)
+    'Jaket Harrington Classic Vintage Cream': 
+        '/images/jaket/jaket1.png',
+    'Jaket Varsity Two-Tone Navy White': 
+        '/images/jaket/jaket2.png',
+    'Jaket Suede Biker Classic Brown': 
+        '/images/jaket/jaket3.png',
 
     // Kategori: Buku & Alat Tulis
     'Buku Pemrograman Web Modern Fullstack': 

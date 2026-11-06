@@ -85,11 +85,7 @@ export default function ProductCatalog({
 
     const handleAdd = (product, e) => {
         e.stopPropagation();
-        onAddToCart(product, 1);
-        setAddedIds(prev => [...prev, product.id_produk]);
-        setTimeout(() => {
-            setAddedIds(prev => prev.filter(id => id !== product.id_produk));
-        }, 1200);
+        onOpenProductDetail(product);
     };
 
     return (
@@ -206,6 +202,8 @@ export default function ProductCatalog({
                         const originalPrice = isSale 
                             ? Math.round((product.harga * 1.25) / 5000) * 5000 
                             : null;
+                        const hasVariants = (Array.isArray(product.ukuran) && product.ukuran.length > 0) || 
+                                            (Array.isArray(product.warna) && product.warna.length > 0);
 
                         return (
                             <div
@@ -214,8 +212,8 @@ export default function ProductCatalog({
                                 className="group bg-white rounded-2xl border border-stone-200/80 hover:border-stone-400 hover:shadow-md transition-all duration-300 flex flex-col p-3 sm:p-3.5 cursor-pointer relative justify-between"
                             >
                                 <div>
-                                    {/* Product Image Container with 4:5 aspect ratio and uniform #f8f8f8 bg */}
-                                    <div className="relative aspect-[4/5] w-full bg-[#f8f8f8] rounded-xl overflow-hidden flex items-center justify-center p-2 mb-2.5">
+                                    {/* Product Image Container with 4:5 aspect ratio and uniform pure white bg */}
+                                    <div className="relative aspect-[4/5] w-full bg-white rounded-xl overflow-hidden flex items-center justify-center p-2 mb-2.5">
                                         <img
                                             src={getProductPhoto(product.nama_produk)}
                                             alt={product.nama_produk}
@@ -274,7 +272,7 @@ export default function ProductCatalog({
                                     </div>
 
                                     {/* 5-Star Rating & Review Count */}
-                                    <div className="flex items-center gap-1 mb-2.5">
+                                    <div className="flex items-center gap-1 mb-2">
                                         <div className="flex text-amber-400">
                                             {[...Array(5)].map((_, i) => (
                                                 <Star key={i} className="w-3 h-3 fill-amber-400 text-amber-400" />
@@ -284,6 +282,32 @@ export default function ProductCatalog({
                                             ({reviewCount})
                                         </span>
                                     </div>
+
+                                    {/* Variant Swatches & Sizes Preview */}
+                                    {(Array.isArray(product.warna) || Array.isArray(product.ukuran)) && (
+                                        <div className="flex items-center justify-between gap-1 mb-2 pt-1.5 border-t border-stone-100/90">
+                                            {Array.isArray(product.warna) && product.warna.length > 0 && (
+                                                <div className="flex items-center gap-1">
+                                                    {product.warna.slice(0, 4).map((c, i) => (
+                                                        <span 
+                                                            key={i}
+                                                            className="w-2.5 h-2.5 rounded-full border border-stone-300"
+                                                            style={{ backgroundColor: c.hex }}
+                                                            title={c.nama}
+                                                        />
+                                                    ))}
+                                                    {product.warna.length > 4 && (
+                                                        <span className="text-[9px] text-stone-400 font-medium">+{product.warna.length - 4}</span>
+                                                    )}
+                                                </div>
+                                            )}
+                                            {Array.isArray(product.ukuran) && product.ukuran.length > 0 && (
+                                                <span className="text-[10px] text-stone-400 font-medium ml-auto tracking-wide">
+                                                    {product.ukuran.join(' ')}
+                                                </span>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Full-Width Forest Green Add to Cart Button */}
@@ -298,7 +322,7 @@ export default function ProductCatalog({
                                                 ? 'bg-[#15351e] text-emerald-200'
                                                 : 'bg-[#204a2c] hover:bg-[#15351e] active:scale-[0.98] text-white'
                                         }`}
-                                        title="Tambah ke Keranjang"
+                                        title="Pilih Opsi & Beli"
                                     >
                                         {isAdded ? (
                                             <>
@@ -308,7 +332,7 @@ export default function ProductCatalog({
                                         ) : (
                                             <>
                                                 <ShoppingCart className="w-3.5 h-3.5" />
-                                                <span>Add to Cart</span>
+                                                <span>Pilih Opsi & Beli</span>
                                             </>
                                         )}
                                     </button>

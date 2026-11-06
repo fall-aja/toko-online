@@ -48,9 +48,54 @@ export default function Navbar({
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+    // Samsung-style sliding indicator and scroll elevation state
+    const [hoveredNav, setHoveredNav] = useState(null);
+    const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0, opacity: 0 });
+    const [isScrolled, setIsScrolled] = useState(false);
+    const navContainerRef = useRef(null);
+    const navItemRefs = useRef({});
+
     const categoriesRef = useRef(null);
     const userMenuRef = useRef(null);
     const searchInputRef = useRef(null);
+
+    // Scroll listener for sticky header elevation animation
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 15);
+        };
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    // Update Samsung-style sliding indicator position
+    const updateIndicator = () => {
+        const currentKey = hoveredNav || activeNavLink || 'home';
+        const currentEl = navItemRefs.current[currentKey];
+        const containerEl = navContainerRef.current;
+
+        if (currentEl && containerEl) {
+            const containerRect = containerEl.getBoundingClientRect();
+            const elRect = currentEl.getBoundingClientRect();
+            setIndicatorStyle({
+                left: elRect.left - containerRect.left + 8,
+                width: Math.max(elRect.width - 16, 24),
+                opacity: 1,
+            });
+        }
+    };
+
+    useEffect(() => {
+        updateIndicator();
+        const t1 = setTimeout(updateIndicator, 50);
+        const t2 = setTimeout(updateIndicator, 200);
+        window.addEventListener('resize', updateIndicator);
+        return () => {
+            clearTimeout(t1);
+            clearTimeout(t2);
+            window.removeEventListener('resize', updateIndicator);
+        };
+    }, [activeNavLink, hoveredNav]);
 
     // Auto-focus search input when opened
     useEffect(() => {
@@ -131,185 +176,205 @@ export default function Navbar({
     };
 
     return (
-        <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-stone-200/80 transition-all">
+        <header className={`sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-stone-200/80 transition-all duration-300 ${
+            isScrolled ? 'shadow-sm py-0 bg-white/98' : 'shadow-none'
+        }`}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between h-18 sm:h-20 gap-4">
+                <div className={`flex items-center justify-between gap-4 transition-all duration-300 ${
+                    isScrolled ? 'h-16 sm:h-18' : 'h-18 sm:h-20'
+                }`}>
                     
-                    {/* 1. BRAND LOGO: RupaKala (Cetak miring / italic, no subtitle underneath) */}
+                    {/* 1. BRAND LOGO: RupaKala (Cetak miring / italic, Samsung-style smooth hover) */}
                     <div className="flex items-center shrink-0">
                         <button
                             onClick={() => handleNavClick('home')}
-                            className="flex items-center group text-left focus:outline-none"
+                            className="flex items-center group text-left focus:outline-none transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]"
                             title="RupaKala Beranda"
                         >
-                            <span className="text-2xl sm:text-[26px] font-bold italic tracking-tight text-stone-900 group-hover:text-stone-700 transition-colors">
+                            <span className="text-2xl sm:text-[26px] font-bold italic tracking-tight text-stone-900 group-hover:text-stone-950 transition-colors">
                                 RupaKala
                             </span>
                         </button>
                     </div>
 
-                    {/* 2. CENTER NAVIGATION LINKS (Exact Order Requested) */}
+                    {/* 2. CENTER NAVIGATION LINKS - Samsung-Style Smooth Sliding Indicator */}
                     {/* Order: Home -> Categories (with dropdown) -> New Arrivals -> Shop -> Best Sellers -> About -> Contact */}
-                    <nav className="hidden md:flex items-center gap-6 lg:gap-8">
-                        
+                    <nav 
+                        ref={navContainerRef}
+                        onMouseLeave={() => setHoveredNav(null)}
+                        className="hidden md:flex items-center gap-1 lg:gap-2 relative py-1"
+                    >
+                        {/* Samsung-Style Sliding Indicator Underline */}
+                        <span
+                            className="absolute -bottom-1 h-[2.5px] bg-stone-950 rounded-full transition-all duration-300 pointer-events-none z-10"
+                            style={{
+                                left: `${indicatorStyle.left}px`,
+                                width: `${indicatorStyle.width}px`,
+                                opacity: indicatorStyle.opacity,
+                                transitionTimingFunction: 'cubic-bezier(0.25, 1, 0.5, 1)',
+                            }}
+                        />
+
                         {/* 1. Home */}
                         <button
+                            ref={(el) => (navItemRefs.current['home'] = el)}
                             onClick={() => handleNavClick('home')}
-                            className={`text-sm tracking-normal transition-colors relative py-1 focus:outline-none ${
+                            onMouseEnter={() => setHoveredNav('home')}
+                            className={`px-3 py-1.5 rounded-lg text-sm transition-all duration-200 relative focus:outline-none cursor-pointer ${
                                 activeNavLink === 'home'
-                                    ? 'text-stone-950 font-semibold'
-                                    : 'text-stone-600 hover:text-stone-950 font-medium'
+                                    ? 'text-stone-950 font-bold'
+                                    : 'text-stone-600 hover:text-stone-950 hover:bg-stone-100/60 font-medium'
                             }`}
                         >
                             Home
-                            {activeNavLink === 'home' && (
-                                <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-5 h-[2px] bg-[#d9534f] rounded-full" />
-                            )}
                         </button>
 
-                        {/* 2. Categories (with dropdown, placed right beside Home) */}
-                        <div className="relative" ref={categoriesRef}>
+                        {/* 2. Categories with Samsung-style dropdown */}
+                        <div 
+                            className="relative" 
+                            ref={categoriesRef}
+                            onMouseEnter={() => {
+                                setHoveredNav('categories');
+                                setIsCategoriesOpen(true);
+                            }}
+                            onMouseLeave={() => {
+                                setIsCategoriesOpen(false);
+                            }}
+                        >
                             <button
+                                ref={(el) => (navItemRefs.current['categories'] = el)}
                                 onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
-                                onMouseEnter={() => setIsCategoriesOpen(true)}
-                                className={`text-sm tracking-normal inline-flex items-center gap-1 py-1 focus:outline-none transition-colors ${
+                                className={`px-3 py-1.5 rounded-lg text-sm inline-flex items-center gap-1.5 focus:outline-none transition-all duration-200 cursor-pointer ${
                                     activeNavLink === 'categories' || isCategoriesOpen
-                                        ? 'text-stone-950 font-semibold'
-                                        : 'text-stone-600 hover:text-stone-950 font-medium'
+                                        ? 'text-stone-950 font-bold'
+                                        : 'text-stone-600 hover:text-stone-950 hover:bg-stone-100/60 font-medium'
                                 }`}
                             >
                                 <span>Categories</span>
-                                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 text-stone-500 ${
+                                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ease-out text-stone-500 ${
                                     isCategoriesOpen ? 'rotate-180 text-stone-900' : ''
                                 }`} />
-                                {activeNavLink === 'categories' && (
-                                    <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-5 h-[2px] bg-[#d9534f] rounded-full" />
-                                )}
                             </button>
 
-                            {/* Dropdown Menu */}
-                            {isCategoriesOpen && (
-                                <div 
-                                    onMouseLeave={() => setIsCategoriesOpen(false)}
-                                    className="absolute left-0 top-full mt-2 w-64 bg-white rounded-2xl shadow-xl border border-stone-200/90 py-2.5 z-50 animate-in fade-in zoom-in-95 duration-150"
-                                >
-                                    <div className="px-4 py-1.5 text-[11px] font-bold text-stone-400 uppercase tracking-wider border-b border-stone-100 flex items-center justify-between">
-                                        <span>Katalog Kategori</span>
-                                        <Layers className="w-3 h-3 text-stone-400" />
-                                    </div>
-
-                                    <button
-                                        onClick={() => handleSelectCategory(null)}
-                                        className={`w-full px-4 py-2 text-left text-xs font-semibold flex items-center justify-between transition-colors ${
-                                            selectedCategory === null 
-                                                ? 'bg-stone-50 text-stone-950' 
-                                                : 'text-stone-700 hover:bg-stone-50 hover:text-stone-950'
-                                        }`}
-                                    >
-                                        <span>Semua Produk</span>
-                                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-stone-100 text-stone-600 font-mono">
-                                            Semua
-                                        </span>
-                                    </button>
-
-                                    {categories.map((cat) => {
-                                        const isSelected = selectedCategory === cat.id_kategori;
-                                        return (
-                                            <button
-                                                key={cat.id_kategori}
-                                                onClick={() => handleSelectCategory(cat.id_kategori)}
-                                                className={`w-full px-4 py-2 text-left text-xs flex items-center justify-between transition-colors ${
-                                                    isSelected 
-                                                        ? 'bg-stone-50 text-stone-950 font-bold' 
-                                                        : 'text-stone-700 hover:bg-stone-50 hover:text-stone-950 font-medium'
-                                                }`}
-                                            >
-                                                <span className="truncate">{cat.nama_kategori}</span>
-                                                {cat.produk_count !== undefined && (
-                                                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-stone-100 text-stone-500 font-mono">
-                                                        {cat.produk_count}
-                                                    </span>
-                                                )}
-                                            </button>
-                                        );
-                                    })}
+                            {/* Dropdown Menu with Samsung smooth scale & blur slide */}
+                            <div 
+                                className={`absolute left-0 top-full mt-2 w-64 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-stone-200/90 py-2.5 z-50 transition-all duration-200 ease-out origin-top ${
+                                    isCategoriesOpen 
+                                        ? 'opacity-100 scale-100 translate-y-0 pointer-events-auto' 
+                                        : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
+                                }`}
+                            >
+                                <div className="px-4 py-1.5 text-[11px] font-bold text-stone-400 uppercase tracking-wider border-b border-stone-100 flex items-center justify-between">
+                                    <span>Katalog Kategori</span>
+                                    <Layers className="w-3 h-3 text-stone-400" />
                                 </div>
-                            )}
+
+                                <button
+                                    onClick={() => handleSelectCategory(null)}
+                                    className={`w-full px-4 py-2 text-left text-xs font-semibold flex items-center justify-between transition-all duration-150 group cursor-pointer ${
+                                        selectedCategory === null 
+                                            ? 'bg-stone-100 text-stone-950' 
+                                            : 'text-stone-700 hover:bg-stone-50 hover:text-stone-950'
+                                    }`}
+                                >
+                                    <span className="group-hover:translate-x-1 transition-transform">Semua Produk</span>
+                                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-stone-100 text-stone-600 font-mono">
+                                        Semua
+                                    </span>
+                                </button>
+
+                                {categories.map((cat) => {
+                                    const isSelected = selectedCategory === cat.id_kategori;
+                                    return (
+                                        <button
+                                            key={cat.id_kategori}
+                                            onClick={() => handleSelectCategory(cat.id_kategori)}
+                                            className={`w-full px-4 py-2 text-left text-xs flex items-center justify-between transition-all duration-150 group cursor-pointer ${
+                                                isSelected 
+                                                    ? 'bg-stone-100 text-stone-950 font-bold' 
+                                                    : 'text-stone-700 hover:bg-stone-50 hover:text-stone-950 font-medium'
+                                            }`}
+                                        >
+                                            <span className="truncate group-hover:translate-x-1 transition-transform">{cat.nama_kategori}</span>
+                                            {cat.produk_count !== undefined && (
+                                                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-stone-100 text-stone-500 font-mono">
+                                                    {cat.produk_count}
+                                                </span>
+                                            )}
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         </div>
 
                         {/* 3. New Arrivals */}
                         <button
+                            ref={(el) => (navItemRefs.current['new_arrivals'] = el)}
                             onClick={() => handleNavClick('new_arrivals')}
-                            className={`text-sm tracking-normal transition-colors relative py-1 focus:outline-none ${
+                            onMouseEnter={() => setHoveredNav('new_arrivals')}
+                            className={`px-3 py-1.5 rounded-lg text-sm transition-all duration-200 relative focus:outline-none cursor-pointer ${
                                 activeNavLink === 'new_arrivals'
-                                    ? 'text-stone-950 font-semibold'
-                                    : 'text-stone-600 hover:text-stone-950 font-medium'
+                                    ? 'text-stone-950 font-bold'
+                                    : 'text-stone-600 hover:text-stone-950 hover:bg-stone-100/60 font-medium'
                             }`}
                         >
                             New Arrivals
-                            {activeNavLink === 'new_arrivals' && (
-                                <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-5 h-[2px] bg-[#d9534f] rounded-full" />
-                            )}
                         </button>
 
-                        {/* 4. Shop (placed right beside New Arrivals on the right) */}
+                        {/* 4. Shop */}
                         <button
+                            ref={(el) => (navItemRefs.current['shop'] = el)}
                             onClick={() => handleNavClick('shop')}
-                            className={`text-sm tracking-normal transition-colors relative py-1 focus:outline-none ${
+                            onMouseEnter={() => setHoveredNav('shop')}
+                            className={`px-3 py-1.5 rounded-lg text-sm transition-all duration-200 relative focus:outline-none cursor-pointer ${
                                 activeNavLink === 'shop'
-                                    ? 'text-stone-950 font-semibold'
-                                    : 'text-stone-600 hover:text-stone-950 font-medium'
+                                    ? 'text-stone-950 font-bold'
+                                    : 'text-stone-600 hover:text-stone-950 hover:bg-stone-100/60 font-medium'
                             }`}
                         >
                             Shop
-                            {activeNavLink === 'shop' && (
-                                <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-5 h-[2px] bg-[#d9534f] rounded-full" />
-                            )}
                         </button>
 
                         {/* 5. Best Sellers */}
                         <button
+                            ref={(el) => (navItemRefs.current['best_sellers'] = el)}
                             onClick={() => handleNavClick('best_sellers')}
-                            className={`text-sm tracking-normal transition-colors relative py-1 focus:outline-none ${
+                            onMouseEnter={() => setHoveredNav('best_sellers')}
+                            className={`px-3 py-1.5 rounded-lg text-sm transition-all duration-200 relative focus:outline-none cursor-pointer ${
                                 activeNavLink === 'best_sellers'
-                                    ? 'text-stone-950 font-semibold'
-                                    : 'text-stone-600 hover:text-stone-950 font-medium'
+                                    ? 'text-stone-950 font-bold'
+                                    : 'text-stone-600 hover:text-stone-950 hover:bg-stone-100/60 font-medium'
                             }`}
                         >
                             Best Sellers
-                            {activeNavLink === 'best_sellers' && (
-                                <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-5 h-[2px] bg-[#d9534f] rounded-full" />
-                            )}
                         </button>
 
                         {/* 6. About */}
                         <button
+                            ref={(el) => (navItemRefs.current['about'] = el)}
                             onClick={() => handleNavClick('about')}
-                            className={`text-sm tracking-normal transition-colors relative py-1 focus:outline-none ${
+                            onMouseEnter={() => setHoveredNav('about')}
+                            className={`px-3 py-1.5 rounded-lg text-sm transition-all duration-200 relative focus:outline-none cursor-pointer ${
                                 activeNavLink === 'about'
-                                    ? 'text-stone-950 font-semibold'
-                                    : 'text-stone-600 hover:text-stone-950 font-medium'
+                                    ? 'text-stone-950 font-bold'
+                                    : 'text-stone-600 hover:text-stone-950 hover:bg-stone-100/60 font-medium'
                             }`}
                         >
                             About
-                            {activeNavLink === 'about' && (
-                                <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-5 h-[2px] bg-[#d9534f] rounded-full" />
-                            )}
                         </button>
 
-                        {/* 7. Contact (Blog is omitted as requested) */}
+                        {/* 7. Contact */}
                         <button
+                            ref={(el) => (navItemRefs.current['contact'] = el)}
                             onClick={() => handleNavClick('contact')}
-                            className={`text-sm tracking-normal transition-colors relative py-1 focus:outline-none ${
+                            onMouseEnter={() => setHoveredNav('contact')}
+                            className={`px-3 py-1.5 rounded-lg text-sm transition-all duration-200 relative focus:outline-none cursor-pointer ${
                                 activeNavLink === 'contact'
-                                    ? 'text-stone-950 font-semibold'
-                                    : 'text-stone-600 hover:text-stone-950 font-medium'
+                                    ? 'text-stone-950 font-bold'
+                                    : 'text-stone-600 hover:text-stone-950 hover:bg-stone-100/60 font-medium'
                             }`}
                         >
                             Contact
-                            {activeNavLink === 'contact' && (
-                                <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-5 h-[2px] bg-[#d9534f] rounded-full" />
-                            )}
                         </button>
 
                     </nav>
@@ -369,12 +434,12 @@ export default function Navbar({
                         {/* 2. Wishlist Icon */}
                         <button
                             onClick={onOpenWishlist}
-                            className="relative p-2 text-stone-700 hover:text-stone-950 hover:bg-stone-50 rounded-full transition-colors focus:outline-none"
+                            className="relative p-2 text-stone-700 hover:text-stone-950 hover:bg-stone-100/70 rounded-full transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none cursor-pointer"
                             title="Daftar Keinginan (Wishlist)"
                         >
                             <Heart className="w-5 h-5 stroke-[1.75]" />
                             {wishlistCount > 0 && (
-                                <span className="absolute top-1 right-1 w-2 h-2 bg-[#d9534f] rounded-full" />
+                                <span className="absolute top-1 right-1 w-2 h-2 bg-[#d9534f] rounded-full animate-pulse" />
                             )}
                         </button>
 
@@ -390,13 +455,21 @@ export default function Navbar({
                                     <UserIcon className="w-5 h-5 stroke-[1.75]" />
                                 </button>
                             ) : (
-                                /* KONDISI 2: Sudah login -> Tampilan INISIAL NAMA LENGKAP */
+                                /* KONDISI 2: Sudah login -> Tampilan FOTO PROFIL / INISIAL NAMA */
                                 <button
                                     onClick={handleProfileClick}
-                                    className="w-8 h-8 rounded-full bg-stone-900 hover:bg-stone-800 text-white flex items-center justify-center font-bold text-xs uppercase tracking-wider shadow-xs hover:ring-2 hover:ring-stone-400 transition-all focus:outline-none"
+                                    className="w-8 h-8 rounded-full overflow-hidden bg-stone-900 hover:bg-stone-800 text-white flex items-center justify-center font-bold text-xs uppercase tracking-wider shadow-xs hover:ring-2 hover:ring-stone-400 transition-all focus:outline-none"
                                     title={`Akun: ${currentUser.nama_lengkap}`}
                                 >
-                                    {getInitials(currentUser.nama_lengkap)}
+                                    {currentUser.foto ? (
+                                        <img
+                                            src={currentUser.foto}
+                                            alt={currentUser.nama_lengkap}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        getInitials(currentUser.nama_lengkap)
+                                    )}
                                 </button>
                             )}
 
@@ -405,8 +478,16 @@ export default function Navbar({
                                 <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl shadow-xl border border-stone-200/90 py-2.5 z-50 animate-in fade-in zoom-in-95 duration-150">
                                     {/* User Info Header */}
                                     <div className="px-4 py-2.5 border-b border-stone-100 flex items-center gap-3">
-                                        <div className="w-9 h-9 rounded-full bg-stone-900 text-white font-bold text-xs flex items-center justify-center uppercase shrink-0">
-                                            {getInitials(currentUser.nama_lengkap)}
+                                        <div className="w-9 h-9 rounded-full overflow-hidden bg-stone-900 text-white font-bold text-xs flex items-center justify-center uppercase shrink-0 border border-stone-200">
+                                            {currentUser.foto ? (
+                                                <img
+                                                    src={currentUser.foto}
+                                                    alt={currentUser.nama_lengkap}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            ) : (
+                                                getInitials(currentUser.nama_lengkap)
+                                            )}
                                         </div>
                                         <div className="min-w-0 flex-1">
                                             <p className="text-xs font-bold text-stone-900 truncate">
@@ -451,7 +532,7 @@ export default function Navbar({
                                             className="w-full px-4 py-2 text-left text-xs text-stone-700 hover:bg-stone-50 hover:text-stone-950 flex items-center gap-2.5 transition-colors"
                                         >
                                             <GitFork className="w-3.5 h-3.5 text-stone-500" />
-                                            <span>Panduan Flowchart</span>
+                                            <span>Arsitektur Sistem (Alur Belanja)</span>
                                         </button>
                                     </div>
 
@@ -509,15 +590,15 @@ export default function Navbar({
                             )}
                         </div>
 
-                        {/* 4. Cart Icon (with orange/terracotta badge matching screenshot) */}
+                        {/* 4. Cart Icon */}
                         <button
                             onClick={() => setIsCartOpen(true)}
-                            className="relative p-2 text-stone-700 hover:text-stone-950 hover:bg-stone-50 rounded-full transition-colors focus:outline-none"
+                            className="relative p-2 text-stone-700 hover:text-stone-950 hover:bg-stone-100/70 rounded-full transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none cursor-pointer"
                             title="Keranjang Belanja"
                         >
                             <ShoppingBag className="w-5 h-5 stroke-[1.75]" />
                             {cartCount > 0 && (
-                                <span className="absolute -top-0.5 -right-0.5 min-w-[17px] h-[17px] px-1 bg-[#d9534f] text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none shadow-xs">
+                                <span className="absolute -top-0.5 -right-0.5 min-w-[17px] h-[17px] px-1 bg-[#d9534f] text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none shadow-xs transition-transform hover:scale-110">
                                     {cartCount}
                                 </span>
                             )}
@@ -636,7 +717,7 @@ export default function Navbar({
                         >
                             <span className="flex items-center gap-2">
                                 <GitFork className="w-4 h-4 text-stone-600" />
-                                Panduan Alur Flowchart
+                                Arsitektur Sistem (Alur Belanja)
                             </span>
                             <ArrowRight className="w-3.5 h-3.5 text-stone-400" />
                         </button>

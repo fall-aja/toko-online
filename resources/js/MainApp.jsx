@@ -106,36 +106,67 @@ export default function MainApp() {
         fetchInitialData();
     }, []);
 
-    // Cart actions
-    const handleAddToCart = (product, qty = 1) => {
+    // Cart actions with Size and Color variant support
+    const handleAddToCart = (product, qty = 1, options = {}) => {
+        const selectedSize = options.size || (Array.isArray(product.ukuran) && product.ukuran.length > 0 ? product.ukuran[0] : null);
+        const selectedColor = options.color || (Array.isArray(product.warna) && product.warna.length > 0 ? product.warna[0].nama : null);
+        const selectedColorHex = options.colorHex || (Array.isArray(product.warna) && product.warna.length > 0 ? product.warna[0].hex : null);
+        const selectedPhoto = options.photo || null;
+
+        const cartKey = `${product.id_produk}_${selectedSize || 'none'}_${selectedColor || 'none'}`;
+
         setCartItems(prev => {
-            const existing = prev.find(item => item.id_produk === product.id_produk);
-            if (existing) {
+            const existingIndex = prev.findIndex(item => item.cartKey === cartKey || (!item.cartKey && item.id_produk === product.id_produk));
+            if (existingIndex > -1) {
+                const existing = prev[existingIndex];
                 const newQty = Math.min(product.stok, existing.qty + qty);
-                return prev.map(item => 
-                    item.id_produk === product.id_produk ? { ...item, qty: newQty } : item
-                );
+                const updated = [...prev];
+                updated[existingIndex] = {
+                    ...existing,
+                    cartKey,
+                    selectedSize: existing.selectedSize || selectedSize,
+                    selectedColor: existing.selectedColor || selectedColor,
+                    selectedColorHex: existing.selectedColorHex || selectedColorHex,
+                    selectedPhoto: existing.selectedPhoto || selectedPhoto,
+                    qty: newQty,
+                };
+                return updated;
             } else {
-                return [...prev, { ...product, qty: Math.min(product.stok, qty) }];
+                return [
+                    ...prev,
+                    {
+                        ...product,
+                        cartKey,
+                        selectedSize,
+                        selectedColor,
+                        selectedColorHex,
+                        selectedPhoto,
+                        qty: Math.min(product.stok, qty),
+                    }
+                ];
             }
         });
     };
 
-    const handleUpdateCartQty = (productId, newQty) => {
+    const handleUpdateCartQty = (key, newQty) => {
         if (newQty <= 0) {
-            handleRemoveCartItem(productId);
+            handleRemoveCartItem(key);
             return;
         }
         setCartItems(prev => prev.map(item => {
-            if (item.id_produk === productId) {
+            const itemKey = item.cartKey || item.id_produk;
+            if (itemKey === key) {
                 return { ...item, qty: Math.min(item.stok, newQty) };
             }
             return item;
         }));
     };
 
-    const handleRemoveCartItem = (productId) => {
-        setCartItems(prev => prev.filter(item => item.id_produk !== productId));
+    const handleRemoveCartItem = (key) => {
+        setCartItems(prev => prev.filter(item => {
+            const itemKey = item.cartKey || item.id_produk;
+            return itemKey !== key;
+        }));
     };
 
     const handleClearCart = () => {
@@ -245,6 +276,37 @@ export default function MainApp() {
             if (trxRes.data && trxRes.data.success) {
                 setTransactions(trxRes.data.transactions);
             }
+        }
+    };
+
+    // Update Profile handler
+    const handleUpdateProfile = async (payload) => {
+        try {
+            const data = {
+                user_id: currentUser?.id_user,
+                ...payload
+            };
+            const response = await axios.post('/api/profile', data);
+            if (response.data && response.data.success) {
+                setCurrentUser(response.data.user);
+                return response.data;
+            }
+            return response.data;
+        } catch (err) {
+            const msg = err.response?.data?.message || err.message || 'Gagal menyimpan perubahan profil.';
+            return { success: false, message: msg };
+        }
+    };
+
+    // Direct Buy from Wishlist (Tokopedia / Shopee style)
+    const handleDirectBuy = (product) => {
+        handleAddToCart(product, 1);
+        setIsWishlistOpen(false);
+        if (!currentUser) {
+            setAuthInitialMode('login');
+            setIsAuthOpen(true);
+        } else {
+            setIsCheckoutOpen(true);
         }
     };
 
@@ -375,7 +437,7 @@ export default function MainApp() {
                             onClick={() => setIsFlowchartOpen(true)}
                             className="text-stone-900 hover:underline font-semibold"
                         >
-                            Lihat Flowchart
+                            Arsitektur Sistem (Alur Belanja)
                         </button>
                     </div>
                 </div>
@@ -426,6 +488,7 @@ export default function MainApp() {
                 onRegister={handleRegister}
                 onSwitchUser={handleSwitchUser}
                 onLogout={handleLogout}
+                onUpdateProfile={handleUpdateProfile}
                 initialMode={authInitialMode}
             />
 
@@ -450,6 +513,7 @@ export default function MainApp() {
                 wishlistItems={wishlistedProducts}
                 onRemoveFromWishlist={handleRemoveFromWishlist}
                 onAddToCart={handleAddToCart}
+                onDirectBuy={handleDirectBuy}
             />
         </div>
     );

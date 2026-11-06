@@ -41,9 +41,15 @@ class ProdukSeeder extends Seeder
                     'stok'        => $item['stok'] ?? 0,
                     'berat'       => $item['berat'] ?? null,
                     'deskripsi'   => $item['deskripsi'] ?? null,
+                    'ukuran'      => $item['ukuran'] ?? null,
+                    'warna'       => $item['warna'] ?? null,
                     'is_active'   => $item['is_active'] ?? 1,
                 ]
             );
         }
+
+        // Hapus produk lama yang sudah tidak terdaftar di database/data/produk.php
+        $activeNames = array_column($products, 'nama_produk');
+        Produk::whereNotIn('nama_produk', $activeNames)->delete();
     }
 }

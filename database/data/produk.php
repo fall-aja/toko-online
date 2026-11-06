@@ -11,8 +11,10 @@
  * 4. stok        : Jumlah ketersediaan barang di gudang
  * 5. berat       : Berat produk dalam satuan gram (gr)
  * 6. deskripsi   : Penjelasan keunggulan produk
- * 7. foto        : URL foto resolusi tinggi untuk katalog produk
- * 8. is_active   : 1 jika produk aktif dijual, 0 jika produk disembunyikan
+ * 7. ukuran      : Array ukuran pakaian (misal: S, M, L, XL, XXL) untuk kategori Fashion
+ * 8. warna       : Array pilihan warna produk dengan nama, hex kode warna, dan foto varian
+ * 9. foto        : URL foto resolusi tinggi untuk katalog produk
+ * 10. is_active  : 1 jika produk aktif dijual, 0 jika produk disembunyikan
  * ============================================================================
  */
 
@@ -28,6 +30,10 @@ return [
         'berat'       => 180,
         'deskripsi'   => 'Wireless earbuds dengan Active Noise Cancelling hingga 35dB, baterai tahan 28 jam, dan audio bass punchy.',
         'foto'        => 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=600&auto=format&fit=crop&q=80',
+        'warna'       => [
+            ['nama' => 'Matte Black', 'hex' => '#18181b'],
+            ['nama' => 'Pure White', 'hex' => '#f8fafc'],
+        ],
         'is_active'   => 1,
     ],
     [
@@ -38,6 +44,11 @@ return [
         'berat'       => 250,
         'deskripsi'   => 'Jam tangan pintar layar AMOLED 1.96 inch, monitor detak jantung, SpO2, GPS, dan tahan air IP68.',
         'foto'        => 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&auto=format&fit=crop&q=80',
+        'warna'       => [
+            ['nama' => 'Space Grey', 'hex' => '#374151'],
+            ['nama' => 'Silver Aluminum', 'hex' => '#cbd5e1'],
+            ['nama' => 'Orange Alpine', 'hex' => '#ea580c'],
+        ],
         'is_active'   => 1,
     ],
     [
@@ -48,16 +59,24 @@ return [
         'berat'       => 850,
         'deskripsi'   => 'Keyboard mekanikal hot-swappable dengan switch linear pre-lubed, RGB backlit, dan konektivitas tri-mode.',
         'foto'        => 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&auto=format&fit=crop&q=80',
+        'warna'       => [
+            ['nama' => 'Retro Grey', 'hex' => '#4b5563'],
+            ['nama' => 'Milk White', 'hex' => '#f1f5f9'],
+        ],
         'is_active'   => 1,
     ],
     [
-        'nama_produk' => 'Powerbank Fast Charge 20000mAh 65W',
+        'nama_produk' => 'Powerbank Magnetic Wireless 10000mAh 22.5W',
         'kategori'    => 'Elektronik & Gadget',
-        'harga'       => 320000,
-        'stok'        => 60,
-        'berat'       => 420,
-        'deskripsi'   => 'Pengisi daya portabel kapasitas besar 20.000mAh mendukung PD 65W, cukup untuk laptop dan smartphone.',
-        'foto'        => 'https://images.unsplash.com/photo-1609592806596-b33367838fb3?w=600&auto=format&fit=crop&q=80',
+        'harga'       => 285000,
+        'stok'        => 50,
+        'berat'       => 210,
+        'deskripsi'   => 'Pengisi daya nirkabel portabel 10.000mAh dengan fitur MagSafe magnetic snap-on, fast charging 22.5W, indikator LED, dan desain ramping ramah penerbangan pesawat.',
+        'foto'        => '/images/powerbank/powerbank1.png',
+        'warna'       => [
+            ['nama' => 'Matte Black', 'hex' => '#1e293b'],
+            ['nama' => 'Titanium Grey', 'hex' => '#64748b'],
+        ],
         'is_active'   => 1,
     ],
 
@@ -67,31 +86,52 @@ return [
     [
         'nama_produk' => 'Polo Shirt Retro Hitam Kerah Putih',
         'kategori'    => 'Fashion & Pakaian',
-        'harga'       => 189000,
+        'harga'       => 18000,
         'stok'        => 35,
         'berat'       => 280,
         'deskripsi'   => 'Kaos polo retro premium warna hitam dengan kerah kontras putih gading dan kancing eksklusif. Bahan katun adem dan potongan rapi.',
         'foto'        => '/images/baju/baju1.png',
+        'ukuran'      => ['S', 'M', 'L', 'XL', 'XXL'],
+        'warna'       => [
+            ['nama' => 'Hitam Retro', 'hex' => '#18181b', 'foto' => '/images/baju/baju1.png'],
+            ['nama' => 'Baby Blue', 'hex' => '#93c5fd', 'foto' => '/images/baju/baju2.png'],
+            ['nama' => 'Vintage Cream', 'hex' => '#fef08a', 'foto' => '/images/baju/baju3.png'],
+            ['nama' => 'Espresso Brown', 'hex' => '#451a03', 'foto' => '/images/baju/baju4.png'],
+        ],
         'is_active'   => 1,
     ],
     [
         'nama_produk' => 'Polo Shirt Pastel Biru Kerah Putih',
         'kategori'    => 'Fashion & Pakaian',
-        'harga'       => 179000,
+        'harga'       => 17000,
         'stok'        => 40,
         'berat'       => 280,
         'deskripsi'   => 'Polo shirt kasual warna baby blue pastel berkerah putih bersih dengan manset lengan kontras yang stylish.',
         'foto'        => '/images/baju/baju2.png',
+        'ukuran'      => ['S', 'M', 'L', 'XL', 'XXL'],
+        'warna'       => [
+            ['nama' => 'Baby Blue', 'hex' => '#93c5fd', 'foto' => '/images/baju/baju2.png'],
+            ['nama' => 'Hitam Retro', 'hex' => '#18181b', 'foto' => '/images/baju/baju1.png'],
+            ['nama' => 'Vintage Cream', 'hex' => '#fef08a', 'foto' => '/images/baju/baju3.png'],
+            ['nama' => 'Espresso Brown', 'hex' => '#451a03', 'foto' => '/images/baju/baju4.png'],
+        ],
         'is_active'   => 1,
     ],
     [
         'nama_produk' => 'Polo Shirt Vintage Cream Kerah Hijau',
         'kategori'    => 'Fashion & Pakaian',
-        'harga'       => 195000,
+        'harga'       => 19000,
         'stok'        => 30,
         'berat'       => 280,
         'deskripsi'   => 'Kaos polo bernuansa vintage warna cream dengan kerah dan lis manset forest green yang sangat elegan.',
         'foto'        => '/images/baju/baju3.png',
+        'ukuran'      => ['S', 'M', 'L', 'XL', 'XXL'],
+        'warna'       => [
+            ['nama' => 'Vintage Cream', 'hex' => '#fef08a', 'foto' => '/images/baju/baju3.png'],
+            ['nama' => 'Hitam Retro', 'hex' => '#18181b', 'foto' => '/images/baju/baju1.png'],
+            ['nama' => 'Baby Blue', 'hex' => '#93c5fd', 'foto' => '/images/baju/baju2.png'],
+            ['nama' => 'Espresso Brown', 'hex' => '#451a03', 'foto' => '/images/baju/baju4.png'],
+        ],
         'is_active'   => 1,
     ],
     [
@@ -102,6 +142,13 @@ return [
         'berat'       => 310,
         'deskripsi'   => 'Polo shirt rajut ribbed knit warna cokelat espresso dengan aksen garis putih ganda pada kerah dan ujung lengan.',
         'foto'        => '/images/baju/baju4.png',
+        'ukuran'      => ['S', 'M', 'L', 'XL', 'XXL'],
+        'warna'       => [
+            ['nama' => 'Espresso Brown', 'hex' => '#451a03', 'foto' => '/images/baju/baju4.png'],
+            ['nama' => 'Hitam Retro', 'hex' => '#18181b', 'foto' => '/images/baju/baju1.png'],
+            ['nama' => 'Baby Blue', 'hex' => '#93c5fd', 'foto' => '/images/baju/baju2.png'],
+            ['nama' => 'Vintage Cream', 'hex' => '#fef08a', 'foto' => '/images/baju/baju3.png'],
+        ],
         'is_active'   => 1,
     ],
     [
@@ -112,6 +159,13 @@ return [
         'berat'       => 280,
         'deskripsi'   => 'Kemeja pria berbahan pure linen adem, potongan regular fit, cocok untuk outfit santai maupun semi formal.',
         'foto'        => '/images/baju/baju1.png',
+        'ukuran'      => ['S', 'M', 'L', 'XL', 'XXL'],
+        'warna'       => [
+            ['nama' => 'Broken White', 'hex' => '#fdfbf7'],
+            ['nama' => 'Sand Khaki', 'hex' => '#c2b280'],
+            ['nama' => 'Sage Green', 'hex' => '#879788'],
+            ['nama' => 'Deep Navy', 'hex' => '#1b2c4e'],
+        ],
         'is_active'   => 1,
     ],
     [
@@ -122,74 +176,64 @@ return [
         'berat'       => 650,
         'deskripsi'   => 'Hoodie fleece tebal 330gsm dengan sablon minimalis, saku kanguru empuk, dan jahitan rapi ganda.',
         'foto'        => 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=600&auto=format&fit=crop&q=80',
+        'ukuran'      => ['M', 'L', 'XL', 'XXL'],
+        'warna'       => [
+            ['nama' => 'Charcoal Heather', 'hex' => '#374151'],
+            ['nama' => 'Onyx Black', 'hex' => '#0f172a'],
+            ['nama' => 'Forest Green', 'hex' => '#14532d'],
+            ['nama' => 'Warm Oat', 'hex' => '#e2d9cc'],
+        ],
         'is_active'   => 1,
     ],
     [
-        'nama_produk' => 'Celana Chino Slim Fit Stretch',
+        'nama_produk' => 'Jaket Harrington Classic Vintage Cream',
         'kategori'    => 'Fashion & Pakaian',
-        'harga'       => 179000,
-        'stok'        => 50,
-        'berat'       => 400,
-        'deskripsi'   => 'Celana panjang chino katun twill elastis yang nyaman dipakai seharian di kantor maupun hangout.',
-        'foto'        => 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600&auto=format&fit=crop&q=80',
-        'is_active'   => 1,
-    ],
-
-    // ------------------------------------------------------------------------
-    // KATEGORI: Sepatu & Tas
-    // ------------------------------------------------------------------------
-    [
-        'nama_produk' => 'Sneakers Urban Casual White Leather',
-        'kategori'    => 'Sepatu & Tas',
-        'harga'       => 425000,
-        'stok'        => 24,
-        'berat'       => 900,
-        'deskripsi'   => 'Sepatu sneakers kulit sintetis premium warna putih bersih dengan insole memory foam anti pegal.',
-        'foto'        => 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&auto=format&fit=crop&q=80',
+        'harga'       => 289000,
+        'stok'        => 35,
+        'berat'       => 550,
+        'deskripsi'   => 'Jaket harrington klasik warna cream gading dengan kerah kasual, resleting silver depan, saku samping, dan aksen bordir ikonik. Bahan katun twill berfuring adem.',
+        'foto'        => '/images/jaket/jaket1.png',
+        'ukuran'      => ['S', 'M', 'L', 'XL', 'XXL'],
+        'warna'       => [
+            ['nama' => 'Cream Gading', 'hex' => '#f5efe6', 'foto' => '/images/jaket/jaket1.png'],
+            ['nama' => 'Varsity Navy', 'hex' => '#1e3a5f', 'foto' => '/images/jaket/jaket2.png'],
+            ['nama' => 'Caramel Suede', 'hex' => '#8b5a2b', 'foto' => '/images/jaket/jaket3.png'],
+            ['nama' => 'Midnight Black', 'hex' => '#18181b'],
+        ],
         'is_active'   => 1,
     ],
     [
-        'nama_produk' => 'Backpack Anti-Air Laptop 15.6 Inch',
-        'kategori'    => 'Sepatu & Tas',
-        'harga'       => 285000,
-        'stok'        => 32,
+        'nama_produk' => 'Jaket Varsity Two-Tone Navy White',
+        'kategori'    => 'Fashion & Pakaian',
+        'harga'       => 295000,
+        'stok'        => 28,
+        'berat'       => 680,
+        'deskripsi'   => 'Jaket varsity bernuansa vintage warna biru navy dengan aksen kontras panel bahu dan lis saku putih gading. Dilengkapi kancing snap button dan rib bergaris elastis.',
+        'foto'        => '/images/jaket/jaket2.png',
+        'ukuran'      => ['S', 'M', 'L', 'XL', 'XXL'],
+        'warna'       => [
+            ['nama' => 'Varsity Navy', 'hex' => '#1e3a5f', 'foto' => '/images/jaket/jaket2.png'],
+            ['nama' => 'Cream Gading', 'hex' => '#f5efe6', 'foto' => '/images/jaket/jaket1.png'],
+            ['nama' => 'Caramel Suede', 'hex' => '#8b5a2b', 'foto' => '/images/jaket/jaket3.png'],
+            ['nama' => 'Forest Emerald', 'hex' => '#14532d'],
+        ],
+        'is_active'   => 1,
+    ],
+    [
+        'nama_produk' => 'Jaket Suede Biker Classic Brown',
+        'kategori'    => 'Fashion & Pakaian',
+        'harga'       => 345000,
+        'stok'        => 22,
         'berat'       => 750,
-        'deskripsi'   => 'Tas ransel kompartemen laptop busa tebal, material cordura water-repellent, dan port USB charger.',
-        'foto'        => 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&auto=format&fit=crop&q=80',
-        'is_active'   => 1,
-    ],
-    [
-        'nama_produk' => 'Sling Bag Minimalist Cordura',
-        'kategori'    => 'Sepatu & Tas',
-        'harga'       => 125000,
-        'stok'        => 55,
-        'berat'       => 220,
-        'deskripsi'   => 'Tas selempang praktis untuk membawa dompet, HP, paspor, kunci, dengan resleting YKK waterproof.',
-        'foto'        => 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&auto=format&fit=crop&q=80',
-        'is_active'   => 1,
-    ],
-
-    // ------------------------------------------------------------------------
-    // KATEGORI: Perlengkapan Rumah
-    // ------------------------------------------------------------------------
-    [
-        'nama_produk' => 'Tumbler Vacuum Insulated 750ml',
-        'kategori'    => 'Perlengkapan Rumah',
-        'harga'       => 135000,
-        'stok'        => 70,
-        'berat'       => 380,
-        'deskripsi'   => 'Botol minum stainless steel sus 304, menjaga air dingin 24 jam dan air panas 12 jam tanpa embun.',
-        'foto'        => 'https://images.unsplash.com/photo-1517256064527-09c73fc73e38?w=600&auto=format&fit=crop&q=80',
-        'is_active'   => 1,
-    ],
-    [
-        'nama_produk' => 'Lampu Meja LED Dimmable Touch Control',
-        'kategori'    => 'Perlengkapan Rumah',
-        'harga'       => 155000,
-        'stok'        => 26,
-        'berat'       => 510,
-        'deskripsi'   => 'Lampu meja belajar dengan 3 temperatur warna (warm, natural, cool) dan pengatur kecerahan sentuh.',
-        'foto'        => 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=600&auto=format&fit=crop&q=80',
+        'deskripsi'   => 'Jaket moto biker bahan faux suede premium warna cokelat karamel dengan resleting asimetris metalik, kerah notch lapel, dan saku zipper modern.',
+        'foto'        => '/images/jaket/jaket3.png',
+        'ukuran'      => ['S', 'M', 'L', 'XL', 'XXL'],
+        'warna'       => [
+            ['nama' => 'Caramel Suede', 'hex' => '#8b5a2b', 'foto' => '/images/jaket/jaket3.png'],
+            ['nama' => 'Cream Gading', 'hex' => '#f5efe6', 'foto' => '/images/jaket/jaket1.png'],
+            ['nama' => 'Varsity Navy', 'hex' => '#1e3a5f', 'foto' => '/images/jaket/jaket2.png'],
+            ['nama' => 'Dark Tan', 'hex' => '#78350f'],
+        ],
         'is_active'   => 1,
     ],
 
@@ -214,6 +258,11 @@ return [
         'berat'       => 320,
         'deskripsi'   => 'Buku catatan bersampul kulit keras, kertas 100gsm ramah tinta fountain pen, 192 halaman bergaris titik.',
         'foto'        => 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&auto=format&fit=crop&q=80',
+        'warna'       => [
+            ['nama' => 'Emerald Green', 'hex' => '#15803d'],
+            ['nama' => 'Classic Navy', 'hex' => '#1e3a8a'],
+            ['nama' => 'Cognac Tan', 'hex' => '#b45309'],
+        ],
         'is_active'   => 1,
     ],
 ];

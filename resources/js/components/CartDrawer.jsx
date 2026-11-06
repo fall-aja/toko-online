@@ -39,33 +39,33 @@ export default function CartDrawer({
                 <div className="w-screen max-w-md bg-white shadow-2xl flex flex-col border-l border-slate-200 animate-in slide-in-from-right duration-200">
                     
                     {/* Header */}
-                    <div className="p-4 sm:p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/70">
+                    <div className="p-4 sm:p-5 border-b border-stone-200 flex items-center justify-between bg-stone-50/80">
                         <div className="flex items-center gap-2.5">
-                            <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-xs">
+                            <div className="w-10 h-10 rounded-2xl bg-stone-900 text-stone-50 flex items-center justify-center shadow-2xs">
                                 <ShoppingCart className="w-5 h-5" />
                             </div>
                             <div>
-                                <h3 className="text-base font-bold text-slate-900">
+                                <h3 className="text-base font-bold text-stone-900">
                                     Keranjang Belanja
                                 </h3>
-                                <p className="text-xs text-slate-500">
-                                    {totalItems} item dipilih (Flowchart Tahap 4)
+                                <p className="text-xs text-stone-500">
+                                    {totalItems} produk terpilih
                                 </p>
                             </div>
                         </div>
                         <button
                             onClick={onClose}
-                            className="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-colors"
+                            className="w-8 h-8 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-100 flex items-center justify-center transition-colors"
                         >
                             <X className="w-5 h-5" />
                         </button>
                     </div>
 
-                    {/* Flowchart Guide Banner */}
-                    <div className="bg-amber-50/70 px-4 py-2 border-b border-amber-200/60 flex items-center gap-2 text-[11px] text-amber-900">
-                        <GitFork className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+                    {/* Trust Banner (Tokopedia/Shopee style) */}
+                    <div className="bg-emerald-50/80 px-4 py-2 border-b border-emerald-100 flex items-center gap-2 text-[11px] text-emerald-900">
+                        <Package className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
                         <span>
-                            <strong>Alur Flowchart:</strong> Anda dapat mengubah Qty atau menghapus item, lalu lanjutkan ke Checkout Pesanan.
+                            <strong>Proteksi RupaKala:</strong> Kemasan aman terlindungi &amp; garansi kurasi asli 100%.
                         </span>
                     </div>
 
@@ -90,12 +90,15 @@ export default function CartDrawer({
                         ) : (
                             cartItems.map((item) => {
                                 const itemSubtotal = item.harga * item.qty;
+                                const itemKey = item.cartKey || item.id_produk;
+                                const itemPhoto = item.selectedPhoto || getProductPhoto(item.nama_produk);
+
                                 return (
-                                    <div key={item.id_produk} className="pt-3 first:pt-0 flex gap-3">
+                                    <div key={itemKey} className="pt-3 first:pt-0 flex gap-3">
                                         {/* Thumbnail */}
-                                        <div className="w-16 h-16 rounded-xl bg-slate-100 overflow-hidden shrink-0 border border-slate-200">
+                                        <div className="w-16 h-16 rounded-xl bg-white overflow-hidden shrink-0 border border-slate-200">
                                             <img
-                                                src={getProductPhoto(item.nama_produk)}
+                                                src={itemPhoto}
                                                 alt={item.nama_produk}
                                                 className="w-full h-full object-cover"
                                             />
@@ -109,14 +112,37 @@ export default function CartDrawer({
                                                         {item.nama_produk}
                                                     </h4>
                                                     <button
-                                                        onClick={() => onRemoveItem(item.id_produk)}
+                                                        onClick={() => onRemoveItem(itemKey)}
                                                         className="text-slate-400 hover:text-rose-600 p-0.5 rounded transition-colors"
                                                         title="Hapus Item"
                                                     >
                                                         <Trash2 className="w-3.5 h-3.5" />
                                                     </button>
                                                 </div>
-                                                <div className="text-[11px] text-slate-400 flex items-center gap-2 mt-0.5">
+
+                                                {/* Variant Badges (Ukuran & Warna) */}
+                                                {(item.selectedSize || item.selectedColor) && (
+                                                    <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                                                        {item.selectedSize && (
+                                                            <span className="px-1.5 py-0.5 rounded-md bg-stone-100 text-stone-700 text-[10px] font-bold border border-stone-200">
+                                                                Size: {item.selectedSize}
+                                                            </span>
+                                                        )}
+                                                        {item.selectedColor && (
+                                                            <span className="px-1.5 py-0.5 rounded-md bg-stone-100 text-stone-700 text-[10px] font-medium border border-stone-200 flex items-center gap-1">
+                                                                {item.selectedColorHex && (
+                                                                    <span 
+                                                                        className="w-2 h-2 rounded-full border border-stone-300"
+                                                                        style={{ backgroundColor: item.selectedColorHex }}
+                                                                    />
+                                                                )}
+                                                                {item.selectedColor}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                )}
+
+                                                <div className="text-[11px] text-slate-400 flex items-center gap-2 mt-1">
                                                     <span>{formatRupiah(item.harga)}</span>
                                                     {item.berat && (
                                                         <span>&bull; {item.berat * item.qty} gr</span>
@@ -128,8 +154,8 @@ export default function CartDrawer({
                                             <div className="flex items-center justify-between mt-2 pt-1">
                                                 <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white">
                                                     <button
-                                                        onClick={() => onUpdateQty(item.id_produk, item.qty - 1)}
-                                                        className="w-6 h-6 flex items-center justify-center text-slate-600 hover:bg-slate-100"
+                                                        onClick={() => onUpdateQty(itemKey, item.qty - 1)}
+                                                        className="w-6 h-6 flex items-center justify-center text-slate-600 hover:bg-slate-100 cursor-pointer"
                                                         title="Kurangi Jumlah"
                                                     >
                                                         <Minus className="w-3 h-3" />
@@ -138,9 +164,9 @@ export default function CartDrawer({
                                                         {item.qty}
                                                     </span>
                                                     <button
-                                                        onClick={() => onUpdateQty(item.id_produk, item.qty + 1)}
+                                                        onClick={() => onUpdateQty(itemKey, item.qty + 1)}
                                                         disabled={item.qty >= item.stok}
-                                                        className={`w-6 h-6 flex items-center justify-center ${
+                                                        className={`w-6 h-6 flex items-center justify-center cursor-pointer ${
                                                             item.qty >= item.stok 
                                                                 ? 'text-slate-300 cursor-not-allowed' 
                                                                 : 'text-slate-600 hover:bg-slate-100'
